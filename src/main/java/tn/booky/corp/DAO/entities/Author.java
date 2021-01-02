@@ -6,6 +6,8 @@ import java.util.Set;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * @author gharbimedaziz
  */
@@ -31,6 +33,7 @@ public class Author implements Serializable {
 	@Column(name = "A_IMAGEURL")
 	private String imageUrl;
 	@OneToMany(mappedBy = "author")
+	@JsonIgnoreProperties("author")
 	private Set<Book> books = new HashSet<>();
 
 	public Author(int id, String firstName, String lastName, String email, int age, String description, String imageUrl,

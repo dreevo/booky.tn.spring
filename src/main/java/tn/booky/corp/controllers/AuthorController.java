@@ -43,7 +43,7 @@ public class AuthorController {
 		return authorService.getAuthorById(id);
 	}
 
-	@GetMapping("/authorEmail/{label}")
+	@GetMapping("/authorEmail/{email}")
 	public Author getAuthorByEmail(@PathVariable String email) {
 		return authorService.getAuthorByEmail(email);
 	}

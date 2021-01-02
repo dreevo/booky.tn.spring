@@ -6,6 +6,8 @@ import java.util.Set;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * @author gharbimedaziz
  */
@@ -28,6 +30,7 @@ public class Pack implements Serializable {
 	@Column(name = "P_DESC")
 	private String description;
 	@OneToMany(mappedBy = "pack")
+	@JsonIgnoreProperties("pack")
 	private Set<Book> books = new HashSet<>();
 
 	public Pack(int id, String label, String imageUrl, double price, String description, Set<Book> books) {

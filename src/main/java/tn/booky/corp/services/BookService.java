@@ -1,7 +1,6 @@
 package tn.booky.corp.services;
 
 import java.util.List;
-
 import tn.booky.corp.DAO.entities.Book;
 
 /**
@@ -12,7 +11,25 @@ public interface BookService {
 
 	public List<Book> saveBooks(List<Book> books);
 
-	public List<Book> getBooks();
+	public List<Book> getBooks(String keyword);
+
+	public List<Book> getBooksSortedByLabelASC();
+
+	public List<Book> getBooksSortedByLabelDESC();
+
+	public List<Book> getBooksSortedByPriceASC();
+
+	public List<Book> getBooksSortedByPriceDESC();
+
+	public List<Book> getBooksFilteredByCategories(String categoriesList);
+
+	public List<Book> getBooksFilteredByLanguages(String languagesList);
+
+	public List<Book> getBooksFilteredByMinPrice(double minPrice);
+
+	public List<Book> getBooksFilteredByMaxPrice(double maxPrice);
+	
+	public List<Book> getBooksFilteredByMinMaxPrice(double minPrice, double maxPrice);
 
 	public Book getBookById(int id);
 
@@ -20,5 +37,5 @@ public interface BookService {
 
 	public String deleteBook(int id);
 
-	public Book updateBook(Book b);
+	public String updateBook(Book b);
 }

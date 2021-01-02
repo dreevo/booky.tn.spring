@@ -30,6 +30,12 @@ public class Category implements Serializable {
 		this.books = books;
 	}
 
+	public Category(int id, String name) {
+		super();
+		this.id = id;
+		this.name = name;
+	}
+
 	public Category() {
 		super();
 		// TODO Auto-generated constructor stub

@@ -6,6 +6,8 @@ import java.util.Set;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * @author gharbimedaziz
  */
@@ -35,9 +37,11 @@ public class Book implements Serializable {
 	private Set<Category> categories = new HashSet<>();
 	@ManyToOne
 	@JoinColumn(name = "A_ID", nullable = false)
+	@JsonIgnoreProperties("books")
 	private Author author;
-	@ManyToOne
-	@JoinColumn(name = "P_ID", nullable = false)
+	@ManyToOne(cascade = CascadeType.ALL, optional = true)
+	@JoinColumn(name = "P_ID", nullable = true)
+	@JsonIgnoreProperties("books")
 	private Pack pack;
 
 	public Book(int id, String label, boolean isInStock, double price, String imageUrl, int rating, Language language,

@@ -1,4 +1,4 @@
-package tn.booky.corp.repositories;
+package tn.booky.corp.DAO.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import tn.booky.corp.DAO.entities.Category;
-import tn.booky.corp.repositories.CategoryRepository;
+import tn.booky.corp.DAO.repositories.CategoryRepository;
 
 /**
  * @author gharbimedaziz

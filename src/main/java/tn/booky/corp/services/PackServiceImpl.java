@@ -1,18 +1,20 @@
 package tn.booky.corp.services;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import tn.booky.corp.DAO.entities.Pack;
-import tn.booky.corp.repositories.PackRepository;
+import tn.booky.corp.DAO.repositories.PackRepository;
 
 /**
  * @author gharbimedaziz
  */
 @Service
-public class PackServiceImpl implements PackService{
+public class PackServiceImpl implements PackService {
 	@Autowired
 	private PackRepository packRepository;
 
@@ -24,8 +26,23 @@ public class PackServiceImpl implements PackService{
 		return packRepository.saveAll(packs);
 	}
 
-	public List<Pack> getPacks() {
-		return packRepository.findAll();
+	public List<Pack> getPacks(String keyword) {
+		List<Pack> packs = new ArrayList<>();
+		if (keyword != null)
+			packs = packRepository.searchPacksByLabel(keyword);
+		else
+			packs = packRepository.findAll();
+		return packs;
+	}
+	
+	public List<Pack> getPacksSortedByPriceASC() {
+		List<Pack> packs = packRepository.findAll(Sort.by(Sort.Direction.ASC, "price"));
+		return packs;
+	}
+
+	public List<Pack> getPacksSortedByPriceDESC() {
+		List<Pack> packs = packRepository.findAll(Sort.by(Sort.Direction.ASC, "price"));
+		return packs;
 	}
 
 	public Pack getPackById(int id) {
@@ -42,16 +59,17 @@ public class PackServiceImpl implements PackService{
 	}
 
 	public Pack updatePack(Pack p) {
-		// CHECKING IF THE PACK LABEL EXISTS IN DATABASE
-		Pack searchPackLabel = packRepository.findByLabel(p.getLabel());
-		if (searchPackLabel != null)
-			return null;
 		Pack existingPack = packRepository.findById(p.getId()).orElse(null);
-		existingPack.setLabel(p.getLabel());
-		existingPack.setDescription(p.getDescription());
-		existingPack.setImageUrl(p.getImageUrl());
-		existingPack.setPrice(p.getPrice());
-		existingPack.setBooks(p.getBooks());
+		if (p.getLabel() != null)
+			existingPack.setLabel(p.getLabel());
+		if (p.getDescription() != null)
+			existingPack.setDescription(p.getDescription());
+		if (p.getImageUrl() != null)
+			existingPack.setImageUrl(p.getImageUrl());
+		if (p.getPrice() != 0)
+			existingPack.setPrice(p.getPrice());
+		if (p.getBooks().size() != 0)
+			existingPack.setBooks(p.getBooks());
 		return packRepository.save(existingPack);
 	}
 }

@@ -3,6 +3,7 @@ package tn.booky.corp.controllers;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,8 +34,16 @@ public class PackController {
 	}
 
 	@GetMapping("/packs")
-	public List<Pack> findAllPacks() {
-		return packService.getPacks();
+	public List<Pack> findAllPacks(@Param("keyword") String keyword) {
+		return packService.getPacks(keyword);
+	}
+	
+	@GetMapping("/packs/sortPrice/{ord}")
+	public List<Pack> findAllBooksSortedByPrice(@PathVariable int ord) {
+		if (ord == 1)
+			return packService.getPacksSortedByPriceASC();
+		else
+			return packService.getPacksSortedByPriceDESC();
 	}
 
 	@GetMapping("/pack/{id}")

@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import tn.booky.corp.DAO.entities.Author;
-import tn.booky.corp.repositories.AuthorRepository;
+import tn.booky.corp.DAO.repositories.AuthorRepository;
 
 /**
  * @author gharbimedaziz
@@ -42,17 +42,12 @@ public class AuthorServiceImpl implements AuthorService {
 	}
 
 	public Author updateAuthor(Author a) {
-		// CHECKING IF THE EMAIL EXISTS IN DATABASE
-		Author searchAuthorEmail = authorRepository.findByEmail(a.getEmail());
-		if (searchAuthorEmail != null)
-			return null;
-		Author existingAuthor = authorRepository.findById(a.getId()).orElse(null);
+		Author existingAuthor = authorRepository.findByEmail(a.getEmail());
 		existingAuthor.setFirstName(a.getFirstName());
 		existingAuthor.setImageUrl(a.getImageUrl());
 		existingAuthor.setLastName(a.getLastName());
 		existingAuthor.setAge(a.getAge());
 		existingAuthor.setDescription(a.getDescription());
-		existingAuthor.setEmail(a.getEmail());
 		return authorRepository.save(existingAuthor);
 	}
 }

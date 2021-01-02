@@ -12,7 +12,11 @@ public interface PackService {
 
 	public List<Pack> savePacks(List<Pack> categories);
 
-	public List<Pack> getPacks();
+	public List<Pack> getPacks(String keyword);
+	
+	public List<Pack> getPacksSortedByPriceASC();
+
+	public List<Pack> getPacksSortedByPriceDESC();
 
 	public Pack getPackById(int id);
 
