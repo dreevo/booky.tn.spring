@@ -12,10 +12,8 @@ import booky.tn.DAOentities.Customer;
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
 	
 		List<Customer> findByEmail(String email);
-	    static Optional<Customer> findByUsername(String username) {
-			// TODO Auto-generated method stub
-			return null;
-		}
+	    Optional<Customer> findByUsername(String username);
+		
 	    Boolean existsByUsername(String username);
 	    Boolean existsByEmail(String email);
 }
