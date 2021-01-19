@@ -1,10 +1,13 @@
 package booky.tn.DAOentities;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -17,83 +20,28 @@ import com.sun.istack.NotNull;
 
 
 @Entity
-@Table(name = "cutomers", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {
-            "username"
-        }),
-        @UniqueConstraint(columnNames = {
-            "email"
-        })
-})
 public class Customer implements Serializable{
 
 	
 	private static final long serialVersionUID = 1L;
 	@Id
 	@GeneratedValue(strategy= GenerationType.IDENTITY)
-	@Column(name="customer_ID")
 	private Long id;
-	@NotBlank(message = "Firstname is mandatory")
-    @Size(min=3, max = 50)
-	@NotNull
-	@Column(name="Firstname")
 	private String firstname;
-	@NotNull
-	@NotBlank(message = "Lastname is mandatory")
-    @Size(min=3, max = 50)
-	@Column(name="Lastname")
 	private String lastname;
-	@NotNull
-	@NotBlank(message = "Username is mandatory")
-    @Size(min=3, max = 50)
-	@Column(name="Username")
-	private String username;
-	@Min(18)
-	@Max(99)
-	@NotNull
-	@Column(name="Age")
 	private int age;
-	@NaturalId
-    @NotBlank(message = "Email is mandatory")
-    @Size(max = 50)
-    @Email
-	@NotNull
-	@Column(name="Email")
 	private String email;
-	@NotBlank(message = "Address is mandatory")
-    @Size(min=3, max = 50)
-	@NotNull
-	@Column(name="Address")
 	private String address;
-	//@NotNull
-	@Column(name="ImgURL")
 	private String imgURL;
-	@NotBlank(message = "Phone Number is mandatory")
-	@Size(min=8, max=8)
-	@NotNull
-	@Column(name="Telephone")
 	private String phone;
-	@NotBlank(message = "Invalid pwd")
-	@NotBlank
-    @Size(min=6, max = 100)
-	@NotNull
-	@Column(name="Password")
 	private String password;
 	
-	@ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "customer_roles", 
-    	joinColumns = @JoinColumn(name = "cutomer_ID"), 
-    	inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Set<Role> roles = new HashSet<>();
-	
-	
-	
-	public Customer(String firstname, String lastname, String username, int age, String email, String address, String imgURL,
+	public Customer(Long id, String firstname, String lastname, int age, String email, String address, String imgURL,
 		String phone, String password) {
 	super();
+	this.id = id;
 	this.firstname = firstname;
 	this.lastname = lastname;
-	this.username = username;
 	this.age = age;
 	this.email = email;
 	this.address = address;
@@ -122,12 +70,6 @@ public class Customer implements Serializable{
 	}
 	public void setLastname(String lastname) {
 		this.lastname = lastname;
-	}
-	public String getUsername() {
-		return username;
-	}
-	public void setUsername(String username) {
-		this.username = username;
 	}
 	public int getAge() {
 		return age;
@@ -160,21 +102,54 @@ public class Customer implements Serializable{
 		this.phone = phone;
 	}
 	
+//	public String getRole() {
+//		return role;
+//	}
+//	public void setRole(String role) {
+//		this.role = role;
+//	}
 	public String getPassword() {
 		return password;
 	}
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	public Set<Role> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
-    }
-    
 	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((email == null) ? 0 : email.hashCode());
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		return result;
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Customer other = (Customer) obj;
+		if (email == null) {
+			if (other.email != null)
+				return false;
+		} else if (!email.equals(other.email))
+			return false;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		return true;
+	}
+	@Override
+	public String toString() {
+		return "Customer [id=" + id + ", firstname=" + firstname + ", lastname=" + lastname + ", age=" + age
+				+ ", email=" + email + ", address=" + address + ", imgURL=" + imgURL + ", phone=" + phone + ""
+						+ ", password=" + password + "]";
+	}
 	
 	
 

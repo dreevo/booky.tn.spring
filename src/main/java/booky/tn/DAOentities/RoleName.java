@@ -1,8 +1,8 @@
 package booky.tn.DAOentities;
 
 public enum RoleName {
-	ROLE_ADMIN, 
+	Role_Admin, 
 	
-	ROLE_USER
+	Role_User
 
 }
