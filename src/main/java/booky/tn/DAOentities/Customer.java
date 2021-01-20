@@ -1,12 +1,16 @@
 package booky.tn.DAOentities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Max;
@@ -35,9 +39,11 @@ public class Customer implements Serializable{
 	private String imgURL;
 	private String phone;
 	private String password;
+	@ManyToMany(fetch = FetchType.EAGER)
+    private Collection<Role> roles = new ArrayList<>();
 	
 	public Customer(Long id, String firstname, String lastname, int age, String email, String address, String imgURL,
-		String phone, String password) {
+		String phone, String password, Collection<Role> roles) {
 	super();
 	this.id = id;
 	this.firstname = firstname;
@@ -48,6 +54,7 @@ public class Customer implements Serializable{
 	this.imgURL = imgURL;
 	this.phone = phone;
 	this.password = password;
+	this.roles= roles;
 }
 	public Customer() {
 		super();
@@ -102,12 +109,14 @@ public class Customer implements Serializable{
 		this.phone = phone;
 	}
 	
-//	public String getRole() {
-//		return role;
-//	}
-//	public void setRole(String role) {
-//		this.role = role;
-//	}
+
+	 public Collection<Role> getRoles() {
+	        return roles;
+	    }
+
+	    public void setRoles(Collection<Role> roles) {
+	        this.roles = roles;
+	    }
 	public String getPassword() {
 		return password;
 	}
@@ -150,6 +159,7 @@ public class Customer implements Serializable{
 				+ ", email=" + email + ", address=" + address + ", imgURL=" + imgURL + ", phone=" + phone + ""
 						+ ", password=" + password + "]";
 	}
+	
 	
 	
 
