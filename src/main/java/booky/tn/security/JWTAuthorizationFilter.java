@@ -45,7 +45,7 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
             }
             JWTVerifier verifier = JWT.require(Algorithm.HMAC256(SecureParam.SECRET)).build();
             DecodedJWT decodedJWT = verifier.verify(jwt.substring(SecureParam.HEADER_PREFIX.length()));
-
+            System.out.println("mcheee");
             String email = decodedJWT.getSubject();
             List<String> roles = decodedJWT.getClaims().get("roles").asList(String.class);
             Collection<GrantedAuthority> authorities = new ArrayList<>();

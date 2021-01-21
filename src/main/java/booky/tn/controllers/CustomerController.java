@@ -10,22 +10,28 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import booky.tn.DAOentities.Customer;
+import booky.tn.services.AccountServiceImpl;
 import booky.tn.services.CustomerService;
 
 @RestController
 @CrossOrigin
+@RequestMapping("/rest/")
 public class CustomerController implements CustomerService<Customer> {
   
 	@Autowired
 	private CustomerService CS;
+	@Autowired
+	private AccountServiceImpl AS;
+	
 	
 	@PostMapping("/addCustomer")
 	public Customer addCustomer( @RequestBody Customer C){
-		return CS.addCustomer(C);
+		return AS.saveUser(C);
 	}
 	
 	@GetMapping
