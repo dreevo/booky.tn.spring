@@ -24,7 +24,7 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
 	@Query("SELECT DISTINCT C.totalPrice from Cart C join C.cartItems CI join CI.book B where B.id=?1")
 	public double getTotalPriceByBook(int bookId);
 	
-	@Query("SELECT B from Book B join cartItem CI where CI.quantity=(SELECT MAX(CI.quantity) from CI group by CI.book")
+	@Query("SELECT B from Book B join B.cartItem CI where CI.quantity is (SELECT MAX(CI.quantity) as maximum from CI group by CI.book)")
 	public Book getMostSelectedBook();
 	
 }

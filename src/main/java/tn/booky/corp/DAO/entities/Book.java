@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  */
 @Entity
 @Table(name = "T_BOOK")
+@JsonIgnoreProperties(value = { "cartItem" })
 public class Book implements Serializable {
 	private static final long serialVersionUID = 1L;
 	@Id
@@ -50,11 +51,7 @@ public class Book implements Serializable {
 	@JoinColumn(name = "C_ID")
 	private Charity charity;
 	@OneToOne(mappedBy = "book")
-	@JsonIgnoreProperties("book")
 	private CartItem cartItem;
-	@OneToOne
-	@JsonIgnoreProperties("book")
-	private Event event;
 
 	public Book(int id, String label, boolean isInStock, double price, String imageUrl, int rating, Language language,
 			Set<Category> categories, Author author, Pack pack, String description) {
@@ -62,7 +59,7 @@ public class Book implements Serializable {
 		this.id = id;
 		this.label = label;
 		this.isInStock = isInStock;
-		this.price = price;	
+		this.price = price;
 		this.imageUrl = imageUrl;
 		this.rating = rating;
 		this.language = language;
@@ -179,14 +176,6 @@ public class Book implements Serializable {
 
 	public void setCartItem(CartItem cartItem) {
 		this.cartItem = cartItem;
-	}
-
-	public Event getEvent() {
-		return event;
-	}
-
-	public void setEvent(Event event) {
-		this.event = event;
 	}
 
 	@Override

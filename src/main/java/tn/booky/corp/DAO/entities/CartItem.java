@@ -21,6 +21,7 @@ public class CartItem implements Serializable {
 	private Double quantity;
 	@OneToOne
 	@JoinColumn(name="B_ID")
+	@JsonIgnoreProperties("book")
 	private Book book;
 	@JsonIgnoreProperties("cart")
 	@ManyToOne

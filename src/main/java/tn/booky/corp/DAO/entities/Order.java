@@ -5,6 +5,8 @@ import java.util.Set;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Entity
 @Table(name="T_order")
 public class Order implements Serializable{
@@ -23,8 +25,10 @@ public class Order implements Serializable{
 	private String orderType;
 	private boolean isDone;
 	@OneToOne(mappedBy="order")
+	@JsonIgnoreProperties("cart")
 	private Cart cart;
 	@OneToMany(mappedBy="order")
+	@JsonIgnoreProperties("shippingAddress")
 	private Set <ShippingAddress> shippingaddress;
 	
 	

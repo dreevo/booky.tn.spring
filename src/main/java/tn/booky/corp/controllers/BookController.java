@@ -26,7 +26,7 @@ public class BookController {
 
 	@Autowired
 	private BookService bookService;
-
+	
 	@PostMapping("/addBook")
 	public Book addBook(@RequestBody Book b) {
 		System.out.println(b);
@@ -130,5 +130,10 @@ public class BookController {
 	@GetMapping("/books/cartTotal/{id}")
 	public double getAverageTotalPriceByBook(@PathVariable int id){
 		return bookService.getTotalPriceByBook(id);
+	}
+	
+	@GetMapping("/books/mostSelected")
+	public Book getMostSelectedBook(){
+		return bookService.getMostSelectedBook();
 	}
 }

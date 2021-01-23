@@ -8,6 +8,8 @@ import java.util.Set;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * @author USER
  *
@@ -25,8 +27,10 @@ public class Cart implements Serializable {
 	private int id;
 	private double totalPrice;
 	@OneToMany(mappedBy = "cart")
+	@JsonIgnoreProperties("cartItems")
 	private Set<CartItem> cartItems;
 	@OneToOne
+	@JsonIgnoreProperties("order")
 	private Order order;
 
 	public Cart() {

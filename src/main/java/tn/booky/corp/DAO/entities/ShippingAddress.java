@@ -9,6 +9,8 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Entity
 @Table(name="T_SHIPPINGADDRESS")
 public class ShippingAddress implements Serializable{
@@ -24,6 +26,7 @@ public class ShippingAddress implements Serializable{
 	private String city;
 	private String zipcode;
 	@ManyToOne
+	@JsonIgnoreProperties("order")
 	private Order order;
 	
 	

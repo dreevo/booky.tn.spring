@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -19,19 +21,21 @@ import tn.booky.corp.DAO.repositories.BookRepository;
 import tn.booky.corp.DAO.repositories.CategoryRepository;
 import tn.booky.corp.DAO.repositories.CharityRepository;
 import tn.booky.corp.DAO.repositories.PackRepository;
+import tn.booky.corp.controllers.BookController;
 
 /**
  * @author gharbimedaziz
  */
 @Service
 public class BookServiceImpl implements BookService {
+	private static final Logger logger = LogManager.getLogger(BookController.class);
 	@Autowired
 	private BookRepository bookRepository;
 	@Autowired
 	private CategoryRepository categoryRepository;
 	@Autowired
 	PackRepository packRepository;
-	@Autowired 
+	@Autowired
 	CharityRepository charityRepository;
 
 	public Book saveBook(Book b) {
@@ -46,8 +50,9 @@ public class BookServiceImpl implements BookService {
 		List<Book> books = new ArrayList<>();
 		if (keyword != null)
 			books = bookRepository.searchBooksByLabel(keyword);
-		else
+		else {
 			books = bookRepository.findAll();
+		}
 		return books;
 	}
 
@@ -106,6 +111,9 @@ public class BookServiceImpl implements BookService {
 
 	public Book getBookById(int id) {
 		Book book = bookRepository.findById(id).orElse(null);
+		if(book == null){
+			logger.warn("No Book found");
+		}
 		return book;
 	}
 
@@ -133,7 +141,7 @@ public class BookServiceImpl implements BookService {
 			existingBook.setRating(b.getRating());
 		if (b.getLanguage() != null)
 			existingBook.setLanguage(b.getLanguage());
-		if(b.getDescription() != null)
+		if (b.getDescription() != null)
 			existingBook.setDescription(b.getDescription());
 		if (b.getCategories().size() != 0) {
 			Set<Category> categories = b.getCategories();
@@ -150,40 +158,40 @@ public class BookServiceImpl implements BookService {
 		bookRepository.save(existingBook);
 		return "Book with id " + b.getId() + " update.";
 	}
-	
-	// ------- PUSHED REQUESTS  ------- \\
-	// CHARITY 
-	public Book assignCharityToBook(Book b){
+
+	// ------- PUSHED REQUESTS ------- \\
+	// CHARITY
+	public Book assignCharityToBook(Book b) {
 		Book exisitngBook = bookRepository.findById(b.getId()).orElse(null);
 		Charity existingCharity = charityRepository.findById(b.getCharity().getId()).orElse(null);
 		exisitngBook.setCharity(existingCharity);
 		return bookRepository.save(exisitngBook);
 	}
-	
-	public Book unassignCharityFromBook(Book b){
+
+	public Book unassignCharityFromBook(Book b) {
 		Book existingBook = bookRepository.findById(b.getId()).orElse(null);
 		existingBook.setCharity(null);
 		return bookRepository.save(existingBook);
 	}
-	
-	public List<String> getBooksLabelsByCharity(int charityId){
+
+	public List<String> getBooksLabelsByCharity(int charityId) {
 		Charity existingCharity = charityRepository.findById(charityId).orElse(null);
 		List<String> booksNames = new ArrayList<>();
-		for(Book book : existingCharity.getBooks()){
+		for (Book book : existingCharity.getBooks()) {
 			booksNames.add(book.getLabel());
 		}
 		return booksNames;
 	}
-	
-	public List<Donation> getDonationsByBookCharity(int bookId){
+
+	public List<Donation> getDonationsByBookCharity(int bookId) {
 		return bookRepository.getDonationsByBookCharity(bookId);
 	}
-	
-	public double getTotalPriceByBook(int bookId){
+
+	public double getTotalPriceByBook(int bookId) {
 		return bookRepository.getTotalPriceByBook(bookId);
 	}
-	
-	public Book getMostSelectedBook(){
+
+	public Book getMostSelectedBook() {
 		return bookRepository.getMostSelectedBook();
 	}
 
