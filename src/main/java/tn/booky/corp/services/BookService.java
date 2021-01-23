@@ -2,6 +2,7 @@ package tn.booky.corp.services;
 
 import java.util.List;
 import tn.booky.corp.DAO.entities.Book;
+import tn.booky.corp.DAO.entities.Donation;
 
 /**
  * @author gharbimedaziz
@@ -28,7 +29,7 @@ public interface BookService {
 	public List<Book> getBooksFilteredByMinPrice(double minPrice);
 
 	public List<Book> getBooksFilteredByMaxPrice(double maxPrice);
-	
+
 	public List<Book> getBooksFilteredByMinMaxPrice(double minPrice, double maxPrice);
 
 	public Book getBookById(int id);
@@ -38,4 +39,18 @@ public interface BookService {
 	public String deleteBook(int id);
 
 	public String updateBook(Book b);
+
+	// PUSHED REQUESTS
+	public Book assignCharityToBook(Book b);
+
+	public Book unassignCharityFromBook(Book b);
+
+	public List<String> getBooksLabelsByCharity(int charityId);
+
+	public List<Donation> getDonationsByBookCharity(int bookId);
+
+	public double getTotalPriceByBook(int bookId);
+	
+	public Book getMostSelectedBook();
+
 }

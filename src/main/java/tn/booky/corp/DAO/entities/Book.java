@@ -21,6 +21,8 @@ public class Book implements Serializable {
 	private int id;
 	@Column(name = "B_LABEL")
 	private String label;
+	@Column(name = "B_DESC")
+	private String description;
 	@Column(name = "B_STOCK")
 	private boolean isInStock;
 	@Column(name = "B_PRICE")
@@ -36,27 +38,38 @@ public class Book implements Serializable {
 	@JoinTable(name = "T_BOOK_CATEGORIES", joinColumns = @JoinColumn(name = "B_ID"), inverseJoinColumns = @JoinColumn(name = "C_ID"))
 	private Set<Category> categories = new HashSet<>();
 	@ManyToOne
-	@JoinColumn(name = "A_ID", nullable = false)
+	@JoinColumn(name = "A_ID")
 	@JsonIgnoreProperties("books")
 	private Author author;
 	@ManyToOne(cascade = CascadeType.ALL, optional = true)
 	@JoinColumn(name = "P_ID", nullable = true)
 	@JsonIgnoreProperties("books")
 	private Pack pack;
+	@ManyToOne
+	@JsonIgnoreProperties("books")
+	@JoinColumn(name = "C_ID")
+	private Charity charity;
+	@OneToOne(mappedBy = "book")
+	@JsonIgnoreProperties("book")
+	private CartItem cartItem;
+	@OneToOne
+	@JsonIgnoreProperties("book")
+	private Event event;
 
 	public Book(int id, String label, boolean isInStock, double price, String imageUrl, int rating, Language language,
-			Set<Category> categories, Author author, Pack pack) {
+			Set<Category> categories, Author author, Pack pack, String description) {
 		super();
 		this.id = id;
 		this.label = label;
 		this.isInStock = isInStock;
-		this.price = price;
+		this.price = price;	
 		this.imageUrl = imageUrl;
 		this.rating = rating;
 		this.language = language;
 		this.categories = categories;
 		this.author = author;
 		this.pack = pack;
+		this.description = description;
 	}
 
 	public Book() {
@@ -144,6 +157,38 @@ public class Book implements Serializable {
 		this.pack = pack;
 	}
 
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public Charity getCharity() {
+		return charity;
+	}
+
+	public void setCharity(Charity charity) {
+		this.charity = charity;
+	}
+
+	public CartItem getCartItem() {
+		return cartItem;
+	}
+
+	public void setCartItem(CartItem cartItem) {
+		this.cartItem = cartItem;
+	}
+
+	public Event getEvent() {
+		return event;
+	}
+
+	public void setEvent(Event event) {
+		this.event = event;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -168,9 +213,9 @@ public class Book implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Book [id=" + id + ", label=" + label + ", isInStock=" + isInStock + ", price=" + price + ", imageUrl="
-				+ imageUrl + ", rating=" + rating + ", language=" + language + ", categories=" + categories
-				+ ", author=" + author + ", pack=" + pack + "]";
+		return "Book [id=" + id + ", label=" + label + ", description=" + description + ", isInStock=" + isInStock
+				+ ", price=" + price + ", imageUrl=" + imageUrl + ", rating=" + rating + ", language=" + language
+				+ ", categories=" + categories + ", author=" + author + ", pack=" + pack + "]";
 	}
 
 }

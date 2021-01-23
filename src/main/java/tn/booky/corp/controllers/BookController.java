@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,12 +14,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import tn.booky.corp.DAO.entities.Book;
+import tn.booky.corp.DAO.entities.Donation;
 import tn.booky.corp.services.BookService;;
 
 /**
  * @author gharbimedaziz
  */
 @RestController
+@CrossOrigin("http://localhost:4200")
 public class BookController {
 
 	@Autowired
@@ -26,6 +29,7 @@ public class BookController {
 
 	@PostMapping("/addBook")
 	public Book addBook(@RequestBody Book b) {
+		System.out.println(b);
 		return bookService.saveBook(b);
 	}
 
@@ -55,7 +59,7 @@ public class BookController {
 			return bookService.getBooksSortedByPriceDESC();
 	}
 
-	@GetMapping("/books/categories")
+	@GetMapping("/books/categories/{names}")
 	public List<Book> findAllBooksFilteredByCategories(@Param("names") String names) {
 		return bookService.getBooksFilteredByCategories(names);
 	}
@@ -100,5 +104,31 @@ public class BookController {
 	@DeleteMapping("/deleteBook/{id}")
 	public String deleteBook(@PathVariable int id) {
 		return bookService.deleteBook(id);
+	}
+	
+	// PUSHED REQUESTS 
+	@PutMapping("/books/assignCharity")
+	public Book assignCharityToBook(@RequestBody Book b){
+		return bookService.assignCharityToBook(b);
+	}
+	
+	@PutMapping("/books/unassignCharity")
+	public Book unassignCharityFromBook(@RequestBody Book b){
+		return bookService.unassignCharityFromBook(b);
+	}
+	
+	@GetMapping("/books/charity/{id}")
+	public List<String> getBooksByCharity(@PathVariable int id){
+		return bookService.getBooksLabelsByCharity(id);
+	}
+	
+	@GetMapping("/books/charity/donations/{id}")
+	public List<Donation> getDonationsByBookCharity(@PathVariable int id){
+		return bookService.getDonationsByBookCharity(id);
+	}
+	
+	@GetMapping("/books/cartTotal/{id}")
+	public double getAverageTotalPriceByBook(@PathVariable int id){
+		return bookService.getTotalPriceByBook(id);
 	}
 }

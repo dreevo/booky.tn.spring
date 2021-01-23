@@ -12,9 +12,12 @@ import org.springframework.stereotype.Service;
 
 import tn.booky.corp.DAO.entities.Book;
 import tn.booky.corp.DAO.entities.Category;
+import tn.booky.corp.DAO.entities.Charity;
+import tn.booky.corp.DAO.entities.Donation;
 import tn.booky.corp.DAO.entities.Pack;
 import tn.booky.corp.DAO.repositories.BookRepository;
 import tn.booky.corp.DAO.repositories.CategoryRepository;
+import tn.booky.corp.DAO.repositories.CharityRepository;
 import tn.booky.corp.DAO.repositories.PackRepository;
 
 /**
@@ -28,6 +31,8 @@ public class BookServiceImpl implements BookService {
 	private CategoryRepository categoryRepository;
 	@Autowired
 	PackRepository packRepository;
+	@Autowired 
+	CharityRepository charityRepository;
 
 	public Book saveBook(Book b) {
 		return bookRepository.save(b);
@@ -128,6 +133,8 @@ public class BookServiceImpl implements BookService {
 			existingBook.setRating(b.getRating());
 		if (b.getLanguage() != null)
 			existingBook.setLanguage(b.getLanguage());
+		if(b.getDescription() != null)
+			existingBook.setDescription(b.getDescription());
 		if (b.getCategories().size() != 0) {
 			Set<Category> categories = b.getCategories();
 			for (Category category : categories) {
@@ -142,6 +149,42 @@ public class BookServiceImpl implements BookService {
 
 		bookRepository.save(existingBook);
 		return "Book with id " + b.getId() + " update.";
+	}
+	
+	// ------- PUSHED REQUESTS  ------- \\
+	// CHARITY 
+	public Book assignCharityToBook(Book b){
+		Book exisitngBook = bookRepository.findById(b.getId()).orElse(null);
+		Charity existingCharity = charityRepository.findById(b.getCharity().getId()).orElse(null);
+		exisitngBook.setCharity(existingCharity);
+		return bookRepository.save(exisitngBook);
+	}
+	
+	public Book unassignCharityFromBook(Book b){
+		Book existingBook = bookRepository.findById(b.getId()).orElse(null);
+		existingBook.setCharity(null);
+		return bookRepository.save(existingBook);
+	}
+	
+	public List<String> getBooksLabelsByCharity(int charityId){
+		Charity existingCharity = charityRepository.findById(charityId).orElse(null);
+		List<String> booksNames = new ArrayList<>();
+		for(Book book : existingCharity.getBooks()){
+			booksNames.add(book.getLabel());
+		}
+		return booksNames;
+	}
+	
+	public List<Donation> getDonationsByBookCharity(int bookId){
+		return bookRepository.getDonationsByBookCharity(bookId);
+	}
+	
+	public double getTotalPriceByBook(int bookId){
+		return bookRepository.getTotalPriceByBook(bookId);
+	}
+	
+	public Book getMostSelectedBook(){
+		return bookRepository.getMostSelectedBook();
 	}
 
 }
