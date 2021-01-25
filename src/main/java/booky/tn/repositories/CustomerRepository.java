@@ -11,6 +11,6 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
 	Customer findUsersByEmail(String email);
 
-    @Query(value = "SELECT u.* FROM `user` u,`user_roles` ur,`role` r WHERE r.id=ur.roles_id and ur.user_id_user=u.id_user and r.role_name = ?", nativeQuery = true)
+    @Query(value = "SELECT u.* FROM `customer` u,`customer_roles` ur,`role` r WHERE r.id=ur.roles_id and ur.customer_id=u.id and r.role_name = ?", nativeQuery = true)
     List<Customer> findUsers(String type);
 }

@@ -34,6 +34,7 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
             Response.setStatus(HttpServletResponse.SC_OK);
         } else if (Request.getRequestURI().equals("/login")) {
             filterChain.doFilter(Request, Response);
+            System.out.println("1 mcheee");
             return;
 
         } else {
@@ -41,11 +42,12 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
             String jwt = Request.getHeader(SecureParam.HEADER_NAME);
             if (jwt == null || !jwt.startsWith(SecureParam.HEADER_PREFIX)) {
                 filterChain.doFilter(Request, Response);
+                System.out.println("2 mcheee" +jwt);
                 return;
             }
             JWTVerifier verifier = JWT.require(Algorithm.HMAC256(SecureParam.SECRET)).build();
             DecodedJWT decodedJWT = verifier.verify(jwt.substring(SecureParam.HEADER_PREFIX.length()));
-            System.out.println("mcheee");
+            System.out.println("3 mcheee");
             String email = decodedJWT.getSubject();
             List<String> roles = decodedJWT.getClaims().get("roles").asList(String.class);
             Collection<GrantedAuthority> authorities = new ArrayList<>();
