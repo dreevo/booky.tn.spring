@@ -15,7 +15,7 @@ public interface DonationService {
 
 	public String deleteDonation(int id);
 
-	public Donation getDonationByCustomer(Customer customer);
+	public List<Donation> getDonationByCustomer(Customer customer);
 
 	public List<Donation> getAllDonations();
 

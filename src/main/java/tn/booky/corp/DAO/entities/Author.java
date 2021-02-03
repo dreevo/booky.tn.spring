@@ -35,6 +35,10 @@ public class Author implements Serializable {
 	@OneToMany(mappedBy = "author")
 	@JsonIgnoreProperties("author")
 	private Set<Book> books = new HashSet<>();
+	@OneToMany(mappedBy = "author")
+	private Set<Blog> blogs = new HashSet<>();
+	@Column(name = "A_FANS")
+	private String fansList;
 
 	public Author(int id, String firstName, String lastName, String email, int age, String description, String imageUrl,
 			Set<Book> books) {
@@ -116,6 +120,22 @@ public class Author implements Serializable {
 
 	public void setBooks(Set<Book> books) {
 		this.books = books;
+	}
+
+	public Set<Blog> getBlogs() {
+		return blogs;
+	}
+
+	public void setBlogs(Set<Blog> blogs) {
+		this.blogs = blogs;
+	}
+
+	public String getFansList() {
+		return fansList;
+	}
+
+	public void setFansList(String fansList) {
+		this.fansList = fansList;
 	}
 
 	@Override

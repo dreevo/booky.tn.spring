@@ -1,7 +1,6 @@
 package tn.booky.corp.DAO.entities;
 
 import java.io.Serializable;
-
 import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -27,6 +26,9 @@ public class CartItem implements Serializable {
 	@ManyToOne
 	@JoinColumn(name = "CA_ID")
 	private Cart cart;
+	@OneToOne
+	@JsonIgnoreProperties("pack")
+	private Pack pack;
 
 	public CartItem() {
 		super();

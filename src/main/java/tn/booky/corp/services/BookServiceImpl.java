@@ -1,6 +1,7 @@
 package tn.booky.corp.services;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -15,11 +16,14 @@ import org.springframework.stereotype.Service;
 import tn.booky.corp.DAO.entities.Book;
 import tn.booky.corp.DAO.entities.Category;
 import tn.booky.corp.DAO.entities.Charity;
+import tn.booky.corp.DAO.entities.Customer;
 import tn.booky.corp.DAO.entities.Donation;
+import tn.booky.corp.DAO.entities.Event;
 import tn.booky.corp.DAO.entities.Pack;
 import tn.booky.corp.DAO.repositories.BookRepository;
 import tn.booky.corp.DAO.repositories.CategoryRepository;
 import tn.booky.corp.DAO.repositories.CharityRepository;
+import tn.booky.corp.DAO.repositories.EventRepository;
 import tn.booky.corp.DAO.repositories.PackRepository;
 import tn.booky.corp.controllers.BookController;
 
@@ -37,6 +41,10 @@ public class BookServiceImpl implements BookService {
 	PackRepository packRepository;
 	@Autowired
 	CharityRepository charityRepository;
+	@Autowired
+	CustomerService customerService;
+	@Autowired
+	EventRepository eventRepository;
 
 	public Book saveBook(Book b) {
 		return bookRepository.save(b);
@@ -111,7 +119,7 @@ public class BookServiceImpl implements BookService {
 
 	public Book getBookById(int id) {
 		Book book = bookRepository.findById(id).orElse(null);
-		if(book == null){
+		if (book == null) {
 			logger.warn("No Book found");
 		}
 		return book;
@@ -154,7 +162,6 @@ public class BookServiceImpl implements BookService {
 			Pack searchPack = packRepository.findByLabel(b.getPack().getLabel());
 			existingBook.setPack(searchPack);
 		}
-
 		bookRepository.save(existingBook);
 		return "Book with id " + b.getId() + " update.";
 	}
@@ -193,6 +200,52 @@ public class BookServiceImpl implements BookService {
 
 	public Book getMostSelectedBook() {
 		return bookRepository.getMostSelectedBook();
+	}
+
+	public List<Book> showRecommendedBooks() {
+		Customer customer = customerService.getAuthenticatedCustomer();
+		// CHECK INFO ABOUT THE CUSTOMER
+		List<Book> books = new ArrayList<>();
+		if (customer.getAge() <= 10)
+			books = getBooksFilteredByCategories("Kids");
+		else if (customer.getAge() > 10 && customer.getAge() <= 30)
+			books = getBooksFilteredByCategories("Action Mystery Sci-Fi");
+		else
+			books = getBooksFilteredByCategories("History");
+		return books;
+	}
+
+	public List<Book> showRelatedBooks(){
+		Customer customer = customerService.getAuthenticatedCustomer();
+		List<Book> topSelectedBooks = bookRepository.getMostSelectedBooksByCustomer(customer.getId());
+		topSelectedBooks = topSelectedBooks.stream().limit(3).collect(Collectors.toList());
+		// GET CATEGORIES OF THESE BOOKS
+		String categoriesList = "";
+		for(Book book : topSelectedBooks){
+			Set<Category> categories = book.getCategories();
+			for(Category category : categories){
+				if(!categoriesList.contains(category.getName()))
+						categoriesList = categoriesList + category.getName();
+			}
+		}
+		List<Book> relatedBooks = getBooksFilteredByCategories(categoriesList);
+		relatedBooks.removeAll(topSelectedBooks);
+		return relatedBooks;
+	}
+	
+	public Book openEventOnBook(){
+		Book exisitngBook = bookRepository.getMostSelectedBook();
+		Event event = new Event();
+		event.setDescription("Book "+exisitngBook.getLabel()+ " Event");
+		event.setBeginDate(new Date());
+		exisitngBook.setEvent(event);
+		return bookRepository.save(exisitngBook);
+	}
+
+	@Override
+	public List<Book> getMostSelectedBooksByCustomer() {
+		Customer customer = customerService.getAuthenticatedCustomer();
+		return bookRepository.getMostSelectedBooksByCustomer(customer.getId());
 	}
 
 }

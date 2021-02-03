@@ -40,7 +40,6 @@ public interface BookService {
 
 	public String updateBook(Book b);
 
-	// PUSHED REQUESTS
 	public Book assignCharityToBook(Book b);
 
 	public Book unassignCharityFromBook(Book b);
@@ -50,7 +49,14 @@ public interface BookService {
 	public List<Donation> getDonationsByBookCharity(int bookId);
 
 	public double getTotalPriceByBook(int bookId);
-	
+
 	public Book getMostSelectedBook();
 
+	public List<Book> showRelatedBooks();
+
+	public List<Book> showRecommendedBooks();
+
+	public List<Book> getMostSelectedBooksByCustomer();
+
+	public Book openEventOnBook();
 }

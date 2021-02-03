@@ -32,7 +32,9 @@ public class Pack implements Serializable {
 	@OneToMany(mappedBy = "pack")
 	@JsonIgnoreProperties("pack")
 	private Set<Book> books = new HashSet<>();
-
+	@OneToOne(mappedBy = "pack")
+	private CartItem cartItem;
+	
 	public Pack(int id, String label, String imageUrl, double price, String description, Set<Book> books) {
 		super();
 		this.id = id;

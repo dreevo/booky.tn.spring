@@ -37,8 +37,7 @@ public class DonationController {
 	}
 	
 	@GetMapping("/donation/{id}")
-	public Donation getDonationByCustomer(@PathVariable Customer customer){
-		
+	public List<Donation> getDonationByCustomer(@PathVariable Customer customer){
 		return donationService.getDonationByCustomer(customer);	
 	}
 	

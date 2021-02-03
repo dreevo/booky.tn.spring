@@ -2,11 +2,13 @@ package tn.booky.corp.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import tn.booky.corp.DAO.entities.Customer;
 import tn.booky.corp.DAO.entities.Pack;
 import tn.booky.corp.DAO.repositories.PackRepository;
 
@@ -17,6 +19,8 @@ import tn.booky.corp.DAO.repositories.PackRepository;
 public class PackServiceImpl implements PackService {
 	@Autowired
 	private PackRepository packRepository;
+	@Autowired
+	CustomerService customerService;
 
 	public Pack savePack(Pack p) {
 		return packRepository.save(p);
@@ -71,5 +75,12 @@ public class PackServiceImpl implements PackService {
 		if (p.getBooks().size() != 0)
 			existingPack.setBooks(p.getBooks());
 		return packRepository.save(existingPack);
+	}
+	
+	public List<Pack> getMostSelectedPacksByCustomer(){
+		Customer customer = customerService.getAuthenticatedCustomer();
+		List<Pack> topSelectedPacks = packRepository.getMostSelectedPacksByCustomer(customer.getId());
+		topSelectedPacks = topSelectedPacks.stream().collect(Collectors.toList());
+		return topSelectedPacks;
 	}
 }

@@ -25,4 +25,6 @@ public interface PackService {
 	public String deletePack(int id);
 
 	public Pack updatePack(Pack c);
+	
+	public List<Pack> getMostSelectedPacksByCustomer();
 }

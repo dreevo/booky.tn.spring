@@ -52,6 +52,9 @@ public class Book implements Serializable {
 	private Charity charity;
 	@OneToOne(mappedBy = "book")
 	private CartItem cartItem;
+	@OneToOne
+	@JoinColumn(name = "E_ID")
+	private Event event;
 
 	public Book(int id, String label, boolean isInStock, double price, String imageUrl, int rating, Language language,
 			Set<Category> categories, Author author, Pack pack, String description) {
@@ -176,6 +179,14 @@ public class Book implements Serializable {
 
 	public void setCartItem(CartItem cartItem) {
 		this.cartItem = cartItem;
+	}
+
+	public Event getEvent() {
+		return event;
+	}
+
+	public void setEvent(Event event) {
+		this.event = event;
 	}
 
 	@Override

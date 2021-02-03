@@ -46,14 +46,9 @@ public class DonationServiceImpl implements DonationService {
 	}
 
 	@Override
-	public Donation getDonationByCustomer(Customer customer) {
-		Optional<Donation> donation = donationRepository.findById(customer.getId());
-
-		if (donation.isPresent()) {
-			return donation.get();
-		} else {
-			return null;
-		}
+	public List<Donation> getDonationByCustomer(Customer customer) {
+		List<Donation> donations = donationRepository.findByCustomerId(customer.getId());
+		return donations;
 	}
 
 	@Override

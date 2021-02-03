@@ -21,4 +21,10 @@ public interface AuthorService {
 	public String deleteAuthor(int id);
 
 	public Author updateAuthor(Author a);
+	
+	public boolean customerIsFanOfTheAuthor(int authorId);
+	
+	public Author getRecommendedAuthor();
+	
+	public Author addCustomerToAuthorFansList();
 }

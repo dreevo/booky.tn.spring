@@ -1,11 +1,16 @@
 package tn.booky.corp.services;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import tn.booky.corp.DAO.entities.Author;
+import tn.booky.corp.DAO.entities.Book;
+import tn.booky.corp.DAO.entities.Customer;
 import tn.booky.corp.DAO.repositories.AuthorRepository;
 
 /**
@@ -15,6 +20,10 @@ import tn.booky.corp.DAO.repositories.AuthorRepository;
 public class AuthorServiceImpl implements AuthorService {
 	@Autowired
 	private AuthorRepository authorRepository;
+	@Autowired
+	private CustomerService customerService;
+	@Autowired
+	private BookService bookService;
 
 	public Author saveAuthor(Author a) {
 		return authorRepository.save(a);
@@ -49,5 +58,38 @@ public class AuthorServiceImpl implements AuthorService {
 		existingAuthor.setAge(a.getAge());
 		existingAuthor.setDescription(a.getDescription());
 		return authorRepository.save(existingAuthor);
+	}
+	
+	public boolean customerIsFanOfTheAuthor(int authorId){
+		Customer customer = customerService.getAuthenticatedCustomer();
+		Author author = authorRepository.findById(authorId).orElse(null);
+		String fansList = author.getFansList();
+		if(fansList.contains(customer.getEmail()))
+			return true;
+		else return false;
+	}
+	
+	public Author getRecommendedAuthor(){
+		Book b = bookService.getMostSelectedBook();
+		Author author = b.getAuthor();
+		if(!customerIsFanOfTheAuthor(author.getId()))
+			return author;
+		else return null;
+	}
+	
+	public Author addCustomerToAuthorFansList(){
+		List<Book> books = bookService.getMostSelectedBooksByCustomer();
+		Map<String, Integer> occAuth = new HashMap<>();
+		for (Book book : books) {
+			occAuth.put(book.getAuthor().getEmail(), occAuth.get(book.getAuthor().getEmail()) + 1);
+		}
+		occAuth.entrySet().stream().sorted(Map.Entry.comparingByValue())
+				.forEachOrdered(x -> occAuth.put(x.getKey(), x.getValue()));
+		List<String> authorsList = occAuth.entrySet().stream().limit(1).map(a -> a.getKey())
+				.collect(Collectors.toList());
+		String favouriteAuthor = authorsList.get(1);
+		Author a = getAuthorByEmail(favouriteAuthor);
+		a.setFansList(a.getFansList() + customerService.getAuthenticatedCustomer().getEmail());
+		return updateAuthor(a);
 	}
 }

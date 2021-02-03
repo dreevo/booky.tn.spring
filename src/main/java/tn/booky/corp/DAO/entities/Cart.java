@@ -32,6 +32,8 @@ public class Cart implements Serializable {
 	@OneToOne
 	@JsonIgnoreProperties("order")
 	private Order order;
+	@OneToOne(mappedBy = "cart")
+	private Customer customer;
 
 	public Cart() {
 		super();

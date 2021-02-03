@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import tn.booky.corp.DAO.entities.Book;
@@ -22,6 +23,7 @@ import tn.booky.corp.services.BookService;;
  */
 @RestController
 @CrossOrigin("http://localhost:4200")
+@RequestMapping("/books")
 public class BookController {
 
 	@Autowired
