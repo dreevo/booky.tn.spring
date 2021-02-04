@@ -1,4 +1,5 @@
 package tn.booky.corp.DAO.entities;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
@@ -8,8 +9,8 @@ import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
-@Table(name="T_order")
-public class Order implements Serializable{
+@Table(name = "T_order")
+public class Order implements Serializable {
 
 	/**
 	 * 
@@ -19,25 +20,22 @@ public class Order implements Serializable{
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	@Temporal(TemporalType.DATE)
-	@Column(name="order_date")
+	@Column(name = "order_date")
 	private Date date;
 	private int discount;
 	private String orderType;
 	private boolean isDone;
-	@OneToOne(mappedBy="order")
+	@OneToOne(mappedBy = "order")
 	@JsonIgnoreProperties("cart")
 	private Cart cart;
-	@OneToMany(mappedBy="order")
+	@OneToMany(mappedBy = "order")
 	@JsonIgnoreProperties("shippingAddress")
-	private Set <ShippingAddress> shippingaddress;
-	
-	
-	
-	
-	
+	private Set<ShippingAddress> shippingaddress;
+
 	public Order() {
 		super();
 	}
+
 	public Order(int id, Date date, int discount, String orderType, boolean isDone) {
 		super();
 		this.id = id;
@@ -46,41 +44,69 @@ public class Order implements Serializable{
 		this.orderType = orderType;
 		this.isDone = isDone;
 	}
+
 	public int getId() {
 		return id;
 	}
+
 	public void setId(int id) {
 		this.id = id;
 	}
+
 	public Date getDate() {
 		return date;
 	}
+
 	public void setDate(Date date) {
 		this.date = date;
 	}
+
 	public int getDiscount() {
 		return discount;
 	}
+
 	public void setDiscount(int discount) {
 		this.discount = discount;
 	}
+
 	public String getOrderType() {
 		return orderType;
 	}
+
 	public void setOrderType(String orderType) {
 		this.orderType = orderType;
 	}
+
 	public boolean isDone() {
 		return isDone;
 	}
+
 	public void setDone(boolean isDone) {
 		this.isDone = isDone;
 	}
+
+	public Cart getCart() {
+		return cart;
+	}
+
+	public void setCart(Cart cart) {
+		this.cart = cart;
+	}
+
+	public Set<ShippingAddress> getShippingaddress() {
+		return shippingaddress;
+	}
+
+	public void setShippingaddress(Set<ShippingAddress> shippingaddress) {
+		this.shippingaddress = shippingaddress;
+	}
+
 	@Override
 	public String toString() {
 		return "Order [id=" + id + ", date=" + date + ", discount=" + discount + ", orderType=" + orderType
 				+ ", isDone=" + isDone + "]";
 	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -88,6 +114,7 @@ public class Order implements Serializable{
 		result = prime * result + id;
 		return result;
 	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -101,7 +128,5 @@ public class Order implements Serializable{
 			return false;
 		return true;
 	}
-	
-	
 
 }

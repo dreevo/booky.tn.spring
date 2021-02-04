@@ -1,13 +1,17 @@
 package tn.booky.corp.services;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import tn.booky.corp.DAO.entities.Book;
+import tn.booky.corp.DAO.entities.Category;
 import tn.booky.corp.DAO.entities.Customer;
 import tn.booky.corp.DAO.entities.Pack;
 import tn.booky.corp.DAO.repositories.PackRepository;
@@ -82,5 +86,25 @@ public class PackServiceImpl implements PackService {
 		List<Pack> topSelectedPacks = packRepository.getMostSelectedPacksByCustomer(customer.getId());
 		topSelectedPacks = topSelectedPacks.stream().collect(Collectors.toList());
 		return topSelectedPacks;
+	}
+	
+	public List<Pack> getRecommendedPacksForCustomer(String surveyAnswer){
+		// GET ALL PACKS AVAILABLE
+		List<Pack> packs = getPacks("");
+		List<Pack> recommendedPacks = new ArrayList<>();
+		String answer_categoriesList = surveyAnswer;
+		for(Pack pack : packs){
+			Set<Book> packBooks = pack.getBooks();
+			Iterator<Book> it = packBooks.iterator();
+		     while(it.hasNext()){
+		        for(Category category : it.next().getCategories()){
+		        	if(answer_categoriesList.contains(category.getName())){
+		        		recommendedPacks.add(pack);
+		        		break;
+		        	}	
+		        }
+		     }
+		}
+		return recommendedPacks;
 	}
 }

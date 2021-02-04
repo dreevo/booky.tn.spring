@@ -15,5 +15,4 @@ public interface OrderService {
 	public List<Order> getOrders();
 
 	public Order updateOrder(Order o);
-
 }

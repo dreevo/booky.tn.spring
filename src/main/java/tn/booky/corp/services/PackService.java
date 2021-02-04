@@ -27,4 +27,6 @@ public interface PackService {
 	public Pack updatePack(Pack c);
 	
 	public List<Pack> getMostSelectedPacksByCustomer();
+	
+	public List<Pack> getRecommendedPacksForCustomer(String surveyAnswer);
 }

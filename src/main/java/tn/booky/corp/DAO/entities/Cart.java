@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  *
  */
 @Entity
-@Table(name="T_CART")
+@Table(name = "T_CART")
 public class Cart implements Serializable {
 
 	/**
@@ -75,6 +75,14 @@ public class Cart implements Serializable {
 
 	public void setOrder(Order order) {
 		this.order = order;
+	}
+
+	public Customer getCustomer() {
+		return customer;
+	}
+
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
 	}
 
 	@Override

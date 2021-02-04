@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -11,6 +12,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import tn.booky.corp.DAO.entities.Book;
@@ -45,6 +47,9 @@ public class BookServiceImpl implements BookService {
 	CustomerService customerService;
 	@Autowired
 	EventRepository eventRepository;
+	
+	private int freeBookId;
+	private double freeBookPrice;
 
 	public Book saveBook(Book b) {
 		return bookRepository.save(b);
@@ -166,8 +171,6 @@ public class BookServiceImpl implements BookService {
 		return "Book with id " + b.getId() + " update.";
 	}
 
-	// ------- PUSHED REQUESTS ------- \\
-	// CHARITY
 	public Book assignCharityToBook(Book b) {
 		Book exisitngBook = bookRepository.findById(b.getId()).orElse(null);
 		Charity existingCharity = charityRepository.findById(b.getCharity().getId()).orElse(null);
@@ -242,10 +245,31 @@ public class BookServiceImpl implements BookService {
 		return bookRepository.save(exisitngBook);
 	}
 
-	@Override
 	public List<Book> getMostSelectedBooksByCustomer() {
 		Customer customer = customerService.getAuthenticatedCustomer();
 		return bookRepository.getMostSelectedBooksByCustomer(customer.getId());
 	}
+	
+	@Scheduled(fixedDelay = 86400000)
+	public void giveawayFreeBook() {
+	    List<Book> books = getBooks("");
+	    int numberOfBooks = books.size();
+	    Random rand = new Random();
+	    int int_random = rand.nextInt(numberOfBooks);
+	    Book chosenBook = books.get(int_random);
+	    freeBookId = chosenBook.getId();
+	    freeBookPrice = chosenBook.getPrice();
+	    if(chosenBook.getPrice() != 0)
+	    	chosenBook.setPrice(0);
+	    bookRepository.save(chosenBook);
+	    System.out.println("Updated the book with id " + chosenBook.getId()+ " it is now free");
+	}
 
+	@Scheduled(fixedRate = 86300000)
+	public void endGiveAwayFreeBook(){
+		Book chosenBook = getBookById(freeBookId);
+		chosenBook.setPrice(freeBookPrice);
+		bookRepository.save(chosenBook);
+		System.out.println("Updated the book with id " + chosenBook.getId()+ " it is not free anymore");
+	}
 }
