@@ -24,28 +24,21 @@ public class AccountServiceImpl implements AccountService {
 	@Override
 	public Customer saveUser(Customer user) {
 		Customer us = userRepository.findUsersByEmail(user.getEmail());
-		System.out.println("lowwweeellll");
 		if (us != null)
 			throw new RuntimeException("User already exist");
-		System.out.println("theeeniiiii");
 		user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-		System.out.println("theeeleethhhh");
 		userRepository.save(user);
-		System.out.println("eeraaabaaaaaa");
 		addRoleToUser(user.getEmail(), "USER");
 		return user;
-
 	}
 
 	@Override
 	public Role saveRole(Role role) {
-
 		return roleRepository.save(role);
 	}
 
 	@Override
 	public Customer loadUserByEmail(String email) {
-
 		return userRepository.findUsersByEmail(email);
 	}
 

@@ -1,6 +1,7 @@
 package tn.booky.corp.services;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -50,11 +51,11 @@ public class CartItemServiceImpl implements CartItemService{
 
 	
 	public void deleteItemFromCart(int cart_id, int book_id) {
-		cartitemrepository.deleteItemFromCart(cart_id, book_id);
+		deleteItemFromCart(cart_id, book_id);
 	}
 	
 	public List<Book> gettopfiveofbooks(){
-		return cartitemrepository.gettopfiveofbooks();
+		return cartitemrepository.gettopfiveofbooks().stream().limit(5).collect(Collectors.toList());
 	}
 	
 	public List<Book> getwortfiveofbooks(){

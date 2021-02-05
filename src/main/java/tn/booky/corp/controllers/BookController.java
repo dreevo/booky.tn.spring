@@ -108,7 +108,6 @@ public class BookController {
 		return bookService.deleteBook(id);
 	}
 	
-	// PUSHED REQUESTS 
 	@PutMapping("/books/assignCharity")
 	public Book assignCharityToBook(@RequestBody Book b){
 		return bookService.assignCharityToBook(b);

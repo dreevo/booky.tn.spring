@@ -3,6 +3,7 @@ package tn.booky.corp.services;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -15,6 +16,7 @@ import tn.booky.corp.DAO.entities.Category;
 import tn.booky.corp.DAO.entities.Customer;
 import tn.booky.corp.DAO.entities.Pack;
 import tn.booky.corp.DAO.repositories.PackRepository;
+import tn.booky.corp.tensor.services.ObjectDetector;
 
 /**
  * @author gharbimedaziz
@@ -89,7 +91,6 @@ public class PackServiceImpl implements PackService {
 	}
 	
 	public List<Pack> getRecommendedPacksForCustomer(String surveyAnswer){
-		// GET ALL PACKS AVAILABLE
 		List<Pack> packs = getPacks("");
 		List<Pack> recommendedPacks = new ArrayList<>();
 		String answer_categoriesList = surveyAnswer;
@@ -106,5 +107,16 @@ public class PackServiceImpl implements PackService {
 		     }
 		}
 		return recommendedPacks;
+	}
+	
+	public boolean validatePackImageUrl(int packId){
+		Pack pack = getPackById(packId);
+		String imageLocation = pack.getImageUrl();
+		ObjectDetector objectDetector = new ObjectDetector();
+		Map<String, Object> result = objectDetector.detect(imageLocation);
+		if(result.get("recognitions") == "Object is verified")
+			return true;
+		else 
+			return false;
 	}
 }

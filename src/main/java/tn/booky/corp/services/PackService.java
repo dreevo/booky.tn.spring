@@ -29,4 +29,6 @@ public interface PackService {
 	public List<Pack> getMostSelectedPacksByCustomer();
 	
 	public List<Pack> getRecommendedPacksForCustomer(String surveyAnswer);
+	
+	public boolean validatePackImageUrl(int packId);
 }

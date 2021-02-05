@@ -15,12 +15,10 @@ public interface CartItemRepository extends JpaRepository<CartItem, Integer> {
 	@Query (value= "select * from cart_item WHERE cart_id= :cart_id", nativeQuery= true )
 	List<CartItem> getitemsbycat_id (@Param("cart_id") int cartid);
 	
-	@Query (value= "DELETE from cart_item WHERE cart_id= :cart_id and book_b_id= :book_id", nativeQuery= true)
-	void deleteItemFromCart (@Param("cart_id") int cartid, @Param("book_id") int bookid);
-	
-	@Query (value= "select * from cart_item join t_book on cart_item.book_b_id=t_book.b_id group by book_b_id order by count(*) DESC LIMIT 5",nativeQuery= true )
-	List<Book> gettopfiveofbooks();
 	
 	@Query (value= "select * from cart_item join t_book on cart_item.book_b_id=t_book.b_id group by book_b_id order by count(*) ASC LIMIT 5",nativeQuery= true )
 	List<Book> getworstfiveofbooks();
+	
+	@Query ("select c from CartItem c join Book b group by c.id order by count(c.id)" )
+	List<Book> gettopfiveofbooks();
 }

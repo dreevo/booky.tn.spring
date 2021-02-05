@@ -13,6 +13,7 @@ import tn.booky.corp.DAO.entities.Donation;
 
 @Repository
 public interface BookRepository extends JpaRepository<Book, Integer> {
+	
 	Book findByLabel(String label);
 
 	@Query("SELECT B from Book B WHERE B.label LIKE %?1%")

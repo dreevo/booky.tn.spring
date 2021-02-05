@@ -21,4 +21,6 @@ public interface CategoryService {
 	public String deleteCategory(int id);
 
 	public Category updateCategory(Category c);
+	
+	public Category getMostSelectedCategory();
 }

@@ -59,4 +59,6 @@ public interface BookService {
 	public List<Book> getMostSelectedBooksByCustomer();
 
 	public Book openEventOnBook();
+	
+	public List<Book> getBooksHavingMostSelectedCategory();
 }

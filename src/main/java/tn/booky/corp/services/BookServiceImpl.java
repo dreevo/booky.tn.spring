@@ -98,6 +98,10 @@ public class BookServiceImpl implements BookService {
 		List<Book> books = bookRepository.findAll();
 		return books.stream().filter(b -> b.getCategories().containsAll(categories)).collect(Collectors.toList());
 	}
+	
+	public List<Book> getBooksHavingMostSelectedCategory(){
+		return getBooksFilteredByCategories(categoryRepository.getMostSelectedCategory().getName());
+	}
 
 	public List<Book> getBooksFilteredByLanguages(String languagesList) {
 		List<Book> books = bookRepository.findAll();

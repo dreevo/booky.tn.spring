@@ -50,4 +50,8 @@ public class CategoryServiceImpl implements CategoryService {
 		existingCategory.setName(c.getName());
 		return categoryRepository.save(existingCategory);
 	}
+	
+	public Category getMostSelectedCategory(){
+		return categoryRepository.getMostSelectedCategory();
+	}
 }
