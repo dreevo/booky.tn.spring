@@ -24,7 +24,5 @@ public interface AuthorService {
 	
 	public boolean customerIsFanOfTheAuthor(int authorId);
 	
-	public Author getRecommendedAuthor();
-	
 	public Author addCustomerToAuthorFansList();
 }

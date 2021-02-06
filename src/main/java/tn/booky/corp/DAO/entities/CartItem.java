@@ -28,6 +28,7 @@ public class CartItem implements Serializable {
 	private Cart cart;
 	@OneToOne
 	@JsonIgnoreProperties("pack")
+	@JoinColumn(name="P_ID")
 	private Pack pack;
 
 	public CartItem() {

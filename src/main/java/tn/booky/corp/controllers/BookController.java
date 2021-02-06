@@ -1,5 +1,6 @@
 package tn.booky.corp.controllers;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import tn.booky.corp.DAO.entities.Book;
 import tn.booky.corp.DAO.entities.Donation;
-import tn.booky.corp.services.BookService;;
+import tn.booky.corp.services.AuthorService;
+import tn.booky.corp.services.BookService;
+import tn.booky.corp.services.UploadToCloudinary;;
 
 /**
  * @author gharbimedaziz
@@ -28,10 +31,20 @@ public class BookController {
 
 	@Autowired
 	private BookService bookService;
-	
+	@Autowired
+	private AuthorService authorService;
+
 	@PostMapping("/addBook")
 	public Book addBook(@RequestBody Book b) {
 		System.out.println(b);
+		b.setAuthor(authorService.getAuthorByEmail(b.getAuthor().getEmail()));
+		UploadToCloudinary uploadToCloudinary = new UploadToCloudinary();
+		try {
+			uploadToCloudinary.uploadImage(b.getImageUrl());
+		} catch (IOException e) {
+			// TODO: handle exception
+		}
+
 		return bookService.saveBook(b);
 	}
 
@@ -40,12 +53,12 @@ public class BookController {
 		return bookService.saveBooks(books);
 	}
 
-	@GetMapping("/books")
+	@GetMapping("/getBooks")
 	public List<Book> findAllBooks(@Param("keyword") String keyword) {
 		return bookService.getBooks(keyword);
 	}
 
-	@GetMapping("/books/sortLabel/{ord}")
+	@GetMapping("/sortLabel/{ord}")
 	public List<Book> findAllBooksSortedByLabel(@PathVariable int ord) {
 		if (ord == 1)
 			return bookService.getBooksSortedByLabelASC();
@@ -53,7 +66,7 @@ public class BookController {
 			return bookService.getBooksSortedByLabelDESC();
 	}
 
-	@GetMapping("/books/sortPrice/{ord}")
+	@GetMapping("sortPrice/{ord}")
 	public List<Book> findAllBooksSortedByPrice(@PathVariable int ord) {
 		if (ord == 1)
 			return bookService.getBooksSortedByPriceASC();
@@ -61,33 +74,32 @@ public class BookController {
 			return bookService.getBooksSortedByPriceDESC();
 	}
 
-	@GetMapping("/books/categories/{names}")
+	@GetMapping("/categories/{names}")
 	public List<Book> findAllBooksFilteredByCategories(@Param("names") String names) {
 		return bookService.getBooksFilteredByCategories(names);
 	}
 
-	@GetMapping("/books/languages")
+	@GetMapping("/languages")
 	public List<Book> findAllBooksFilteredByLanguages(@Param("names") String names) {
 		return bookService.getBooksFilteredByLanguages(names);
 	}
-	
-	@GetMapping("/books/minPrice/{min}")
+
+	@GetMapping("/minPrice/{min}")
 	public List<Book> findAllBooksFilteredByMinPrice(@PathVariable double min) {
-			return bookService.getBooksFilteredByMinPrice(min);
+		return bookService.getBooksFilteredByMinPrice(min);
 	}
-	
-	@GetMapping("/books/maxPrice/{max}")
+
+	@GetMapping("/maxPrice/{max}")
 	public List<Book> findAllBooksFilteredByMaxPrice(@PathVariable double max) {
-			return bookService.getBooksFilteredByMaxPrice(max);
+		return bookService.getBooksFilteredByMaxPrice(max);
 	}
 
-	@GetMapping("/books/price")
-	public List<Book> findAllBooksFilteredByPrice(@Param("min") double min,
-			@Param("max") double max) {
-			return bookService.getBooksFilteredByMinMaxPrice(min, max);
+	@GetMapping("/price")
+	public List<Book> findAllBooksFilteredByPrice(@Param("min") double min, @Param("max") double max) {
+		return bookService.getBooksFilteredByMinMaxPrice(min, max);
 	}
 
-	@GetMapping("/book/{id}")
+	@GetMapping("/{id}")
 	public Book getBookById(@PathVariable int id) {
 
 		return bookService.getBookById(id);
@@ -107,34 +119,39 @@ public class BookController {
 	public String deleteBook(@PathVariable int id) {
 		return bookService.deleteBook(id);
 	}
-	
-	@PutMapping("/books/assignCharity")
-	public Book assignCharityToBook(@RequestBody Book b){
+
+	@PutMapping("/assignCharity")
+	public Book assignCharityToBook(@RequestBody Book b) {
 		return bookService.assignCharityToBook(b);
 	}
-	
-	@PutMapping("/books/unassignCharity")
-	public Book unassignCharityFromBook(@RequestBody Book b){
+
+	@PutMapping("/unassignCharity")
+	public Book unassignCharityFromBook(@RequestBody Book b) {
 		return bookService.unassignCharityFromBook(b);
 	}
-	
-	@GetMapping("/books/charity/{id}")
-	public List<String> getBooksByCharity(@PathVariable int id){
+
+	@GetMapping("/charity/{id}")
+	public List<String> getBooksByCharity(@PathVariable int id) {
 		return bookService.getBooksLabelsByCharity(id);
 	}
-	
-	@GetMapping("/books/charity/donations/{id}")
-	public List<Donation> getDonationsByBookCharity(@PathVariable int id){
+
+	@GetMapping("/charity/donations/{id}")
+	public List<Donation> getDonationsByBookCharity(@PathVariable int id) {
 		return bookService.getDonationsByBookCharity(id);
 	}
-	
-	@GetMapping("/books/cartTotal/{id}")
-	public double getAverageTotalPriceByBook(@PathVariable int id){
+
+	@GetMapping("/cartTotal/{id}")
+	public double getAverageTotalPriceByBook(@PathVariable int id) {
 		return bookService.getTotalPriceByBook(id);
 	}
-	
-	@GetMapping("/books/mostSelected")
-	public Book getMostSelectedBook(){
-		return bookService.getMostSelectedBook();
+
+	@GetMapping("/related")
+	public List<Book> getRelatedBooks() {
+		return bookService.showRelatedBooks();
+	}
+
+	@GetMapping("/bookEvent")
+	public Book openEventOnMostSelectedBook() {
+		return bookService.openEventOnBook();
 	}
 }

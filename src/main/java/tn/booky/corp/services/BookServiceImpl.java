@@ -1,5 +1,6 @@
 package tn.booky.corp.services;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -8,13 +9,13 @@ import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.transaction.Transactional;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-
 import tn.booky.corp.DAO.entities.Book;
 import tn.booky.corp.DAO.entities.Category;
 import tn.booky.corp.DAO.entities.Charity;
@@ -47,11 +48,23 @@ public class BookServiceImpl implements BookService {
 	CustomerService customerService;
 	@Autowired
 	EventRepository eventRepository;
-	
+	@Autowired
+	CategoryService categoryService;
+	@Autowired
+	EventService eventService;
+	@Autowired
+	CharityService charityService;
+
 	private int freeBookId;
 	private double freeBookPrice;
 
 	public Book saveBook(Book b) {
+		UploadToCloudinary uploadToCloudinary = new UploadToCloudinary();
+		try{
+			uploadToCloudinary.uploadImage(b.getImageUrl());
+		}catch (IOException e) {
+			// TODO: handle exception
+		}
 		return bookRepository.save(b);
 	}
 
@@ -89,20 +102,10 @@ public class BookServiceImpl implements BookService {
 		return books;
 	}
 
-	public List<Book> getBooksFilteredByCategories(String categoriesList) {
-		Set<Category> categories = new HashSet<>();
-		String[] liStrings = categoriesList.split(" ");
-		for (String xString : liStrings) {
-			categories.add(new Category(1, xString));
-		}
-		List<Book> books = bookRepository.findAll();
-		return books.stream().filter(b -> b.getCategories().containsAll(categories)).collect(Collectors.toList());
-	}
-	
-	public List<Book> getBooksHavingMostSelectedCategory(){
+	public List<Book> getBooksHavingMostSelectedCategory() {
 		return getBooksFilteredByCategories(categoryRepository.getMostSelectedCategory().getName());
 	}
-
+	
 	public List<Book> getBooksFilteredByLanguages(String languagesList) {
 		List<Book> books = bookRepository.findAll();
 		return books.stream().filter(b -> languagesList.contains(b.getLanguage().toString()))
@@ -205,10 +208,6 @@ public class BookServiceImpl implements BookService {
 		return bookRepository.getTotalPriceByBook(bookId);
 	}
 
-	public Book getMostSelectedBook() {
-		return bookRepository.getMostSelectedBook();
-	}
-
 	public List<Book> showRecommendedBooks() {
 		Customer customer = customerService.getAuthenticatedCustomer();
 		// CHECK INFO ABOUT THE CUSTOMER
@@ -221,59 +220,98 @@ public class BookServiceImpl implements BookService {
 			books = getBooksFilteredByCategories("History");
 		return books;
 	}
-
-	public List<Book> showRelatedBooks(){
-		Customer customer = customerService.getAuthenticatedCustomer();
-		List<Book> topSelectedBooks = bookRepository.getMostSelectedBooksByCustomer(customer.getId());
-		topSelectedBooks = topSelectedBooks.stream().limit(3).collect(Collectors.toList());
-		// GET CATEGORIES OF THESE BOOKS
-		String categoriesList = "";
-		for(Book book : topSelectedBooks){
-			Set<Category> categories = book.getCategories();
-			for(Category category : categories){
-				if(!categoriesList.contains(category.getName()))
-						categoriesList = categoriesList + category.getName();
+	
+	public List<Book> getBooksFilteredByCategories(String categoriesList) {
+		Set<Category> categories = new HashSet<>();
+		String[] liStrings = categoriesList.split(" ");
+		for (String xString : liStrings) {
+			categories.add(categoryService.getCategoryByName(xString));
+		}
+		List<Book> books = bookRepository.findAll();
+		List<Book> filteredBooks = new ArrayList<>();
+		for (Book book : books) {
+			for (Category category : book.getCategories()) {
+				if (categories.contains(category)) {
+					filteredBooks.add(book);
+					break;
+				}
 			}
 		}
+		return filteredBooks;
+	}
+
+	public List<Book> showRelatedBooks() {
+		Customer customer = customerService.getAuthenticatedCustomer();
+		List<Book> selectedBooks = bookRepository.getSelectedBooksByCustomerOrdered(customer.getId());
+		selectedBooks = selectedBooks.stream().limit(3).collect(Collectors.toList());
+		for (Book book : selectedBooks) {
+			logger.warn("selected book " + book.getLabel() + " with categories " + book.getCategories());
+		}
+		String categoriesList = "";
+		for (Book book : selectedBooks) {
+			Set<Category> categories = book.getCategories();
+			for (Category category : categories) {
+				if (!categoriesList.contains(category.getName()))
+					categoriesList = categoriesList + " " + category.getName();
+			}
+		}
+		categoriesList = categoriesList.substring(1);
+		if (customer.getAge() <= 10 && !(categoriesList.contains("Kids")))
+			categoriesList = categoriesList + " " + "Kids";
+		else if (customer.getAge() > 10 && customer.getAge() <= 30 && !(categoriesList.contains("Action")))
+			categoriesList = categoriesList + " " + "Action";
+		else
+			categoriesList = categoriesList + " " + "History";
 		List<Book> relatedBooks = getBooksFilteredByCategories(categoriesList);
-		relatedBooks.removeAll(topSelectedBooks);
+		if(customer.getAddress().contains("Tunis"))
+			relatedBooks.addAll(getBooksFilteredByLanguages("ARABIC"));
+		relatedBooks.removeAll(selectedBooks);
 		return relatedBooks;
 	}
 	
-	public Book openEventOnBook(){
-		Book exisitngBook = bookRepository.getMostSelectedBook();
+	@Transactional
+	public Book openEventOnBook() {
+		List<Book> books = bookRepository.getMostSelectedBook();
+		Book exisitngBook= new Book();
+		List<Book> books2 = books.stream().limit(1).collect(Collectors.toList());
+		exisitngBook = books2.get(0);
 		Event event = new Event();
-		event.setDescription("Book "+exisitngBook.getLabel()+ " Event");
+		event.setDescription("Book " + exisitngBook.getLabel() + " Event");
+		event.setTitle("Book " + exisitngBook.getLabel() + " Event");
 		event.setBeginDate(new Date());
+		eventService.addEvent(event);
 		exisitngBook.setEvent(event);
+		if(exisitngBook.getCharity() == null){
+			Charity charity = new Charity();
+			charity.setDescription("This is the most selected book charity");
+			charity.setTitle("Charity Of the Most Selected Book");
+			charity = charityService.addCharity(charity);
+			System.out.println(charity);
+			exisitngBook.setCharity(charity);
+		}
 		return bookRepository.save(exisitngBook);
 	}
 
-	public List<Book> getMostSelectedBooksByCustomer() {
-		Customer customer = customerService.getAuthenticatedCustomer();
-		return bookRepository.getMostSelectedBooksByCustomer(customer.getId());
-	}
-	
-	@Scheduled(fixedDelay = 86400000)
+	// @Scheduled(fixedDelay = 86400000)
 	public void giveawayFreeBook() {
-	    List<Book> books = getBooks("");
-	    int numberOfBooks = books.size();
-	    Random rand = new Random();
-	    int int_random = rand.nextInt(numberOfBooks);
-	    Book chosenBook = books.get(int_random);
-	    freeBookId = chosenBook.getId();
-	    freeBookPrice = chosenBook.getPrice();
-	    if(chosenBook.getPrice() != 0)
-	    	chosenBook.setPrice(0);
-	    bookRepository.save(chosenBook);
-	    System.out.println("Updated the book with id " + chosenBook.getId()+ " it is now free");
+		List<Book> books = getBooks("");
+		int numberOfBooks = books.size();
+		Random rand = new Random();
+		int int_random = rand.nextInt(numberOfBooks);
+		Book chosenBook = books.get(int_random);
+		freeBookId = chosenBook.getId();
+		freeBookPrice = chosenBook.getPrice();
+		if (chosenBook.getPrice() != 0)
+			chosenBook.setPrice(0);
+		bookRepository.save(chosenBook);
+		System.out.println("Updated the book with id " + chosenBook.getId() + " it is now free");
 	}
 
-	@Scheduled(fixedRate = 86300000)
-	public void endGiveAwayFreeBook(){
+	// @Scheduled(fixedRate = 86300000)
+	public void endGiveAwayFreeBook() {
 		Book chosenBook = getBookById(freeBookId);
 		chosenBook.setPrice(freeBookPrice);
 		bookRepository.save(chosenBook);
-		System.out.println("Updated the book with id " + chosenBook.getId()+ " it is not free anymore");
+		System.out.println("Updated the book with id " + chosenBook.getId() + " it is not free anymore");
 	}
 }

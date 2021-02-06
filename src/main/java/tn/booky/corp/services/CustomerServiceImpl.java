@@ -1,15 +1,9 @@
 package tn.booky.corp.services;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import tn.booky.corp.DAO.entities.Author;
-import tn.booky.corp.DAO.entities.Book;
 import tn.booky.corp.DAO.entities.Customer;
 import tn.booky.corp.DAO.repositories.CustomerRepository;
 
@@ -19,11 +13,6 @@ public class CustomerServiceImpl implements CustomerService {
 	@Autowired
 	private CustomerRepository CustomerRepo;
 
-	@Autowired
-	private BookService bookService;
-
-	@Autowired
-	private AuthorService authorService;
 
 	public Customer addCustomer(Customer C) {
 		return CustomerRepo.save(C);
@@ -71,24 +60,7 @@ public class CustomerServiceImpl implements CustomerService {
 	@Override
 	public Customer getAuthenticatedCustomer() {
 		// TODO Auto-generated method stub
-		return null;
+		Long id = 1L;
+		return CustomerRepo.findById(id).orElse(null);
 	}
-
-	public String updateAuthorFansList() {
-		List<Book> books = bookService.getMostSelectedBooksByCustomer();
-		Map<String, Integer> occAuth = new HashMap<>();
-		for (Book book : books) {
-			occAuth.put(book.getAuthor().getEmail(), occAuth.get(book.getAuthor().getEmail()) + 1);
-		}
-		occAuth.entrySet().stream().sorted(Map.Entry.comparingByValue())
-				.forEachOrdered(x -> occAuth.put(x.getKey(), x.getValue()));
-		List<String> authorsList = occAuth.entrySet().stream().limit(1).map(a -> a.getKey())
-				.collect(Collectors.toList());
-		String favouriteAuthor = authorsList.get(1);
-		Author a = authorService.getAuthorByEmail(favouriteAuthor);
-		a.setFansList(a.getFansList() + getAuthenticatedCustomer().getEmail());
-		authorService.updateAuthor(a);
-		return "Fans List update for author" + a.getLastName() + " " + a.getFirstName();
-	}
-
 }

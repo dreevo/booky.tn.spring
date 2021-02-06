@@ -50,13 +50,9 @@ public interface BookService {
 
 	public double getTotalPriceByBook(int bookId);
 
-	public Book getMostSelectedBook();
-
 	public List<Book> showRelatedBooks();
 
 	public List<Book> showRecommendedBooks();
-
-	public List<Book> getMostSelectedBooksByCustomer();
 
 	public Book openEventOnBook();
 	

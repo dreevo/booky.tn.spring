@@ -12,6 +12,7 @@ import tn.booky.corp.DAO.entities.Author;
 import tn.booky.corp.DAO.entities.Book;
 import tn.booky.corp.DAO.entities.Customer;
 import tn.booky.corp.DAO.repositories.AuthorRepository;
+import tn.booky.corp.DAO.repositories.BookRepository;
 
 /**
  * @author gharbimedaziz
@@ -23,7 +24,7 @@ public class AuthorServiceImpl implements AuthorService {
 	@Autowired
 	private CustomerService customerService;
 	@Autowired
-	private BookService bookService;
+	private BookRepository bookRepository;
 
 	public Author saveAuthor(Author a) {
 		return authorRepository.save(a);
@@ -68,17 +69,9 @@ public class AuthorServiceImpl implements AuthorService {
 			return true;
 		else return false;
 	}
-	
-	public Author getRecommendedAuthor(){
-		Book b = bookService.getMostSelectedBook();
-		Author author = b.getAuthor();
-		if(!customerIsFanOfTheAuthor(author.getId()))
-			return author;
-		else return null;
-	}
-	
+		
 	public Author addCustomerToAuthorFansList(){
-		List<Book> books = bookService.getMostSelectedBooksByCustomer();
+		List<Book> books = bookRepository.getSelectedBooksByCustomerOrdered(1L);
 		Map<String, Integer> occAuth = new HashMap<>();
 		for (Book book : books) {
 			occAuth.put(book.getAuthor().getEmail(), occAuth.get(book.getAuthor().getEmail()) + 1);
